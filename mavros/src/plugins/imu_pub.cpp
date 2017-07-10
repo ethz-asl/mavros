@@ -77,6 +77,9 @@ public:
 		imu_nh.param("orientation_stdev", orientation_stdev, 1.0);
 		imu_nh.param("magnetic_stdev", mag_stdev, 0.0);
 
+		//needed to twist the output to match the piski gps convention (east = 0)
+		imu_nh.param("twist_angle", twist_angle, 0.0);
+
 		setup_covariance(linear_acceleration_cov, linear_stdev);
 		setup_covariance(angular_velocity_cov, angular_stdev);
 		setup_covariance(orientation_cov, orientation_stdev);
@@ -125,6 +128,8 @@ private:
 	UAS::Covariance3d unk_orientation_cov;
 	UAS::Covariance3d magnetic_cov;
 
+	double twist_angle;
+
 	/* -*- helpers -*- */
 
 	void setup_covariance(UAS::Covariance3d &cov, double stdev) {
@@ -147,7 +152,11 @@ private:
 		// fill
 		imu_msg->header = uas->synchronized_header(frame_id, time_boot_ms);
 
-		tf::quaternionEigenToMsg(orientation, imu_msg->orientation);
+		//twist orientation
+		Eigen::Quaterniond twisted_orientation = orientation * 
+			Eigen::AngleAxisd(twist_angle, Eigen::Vector3d::UnitZ());
+
+		tf::quaternionEigenToMsg(twisted_orientation, imu_msg->orientation);
 		tf::vectorEigenToMsg(gyro, imu_msg->angular_velocity);
 
 		// vector from HIGHRES_IMU or RAW_IMU
