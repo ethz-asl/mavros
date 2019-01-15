@@ -47,4 +47,7 @@
 	<class name="vision_speed_estimate" type="mavros::extra_plugins::VisionSpeedEstimatePlugin" base_class_type="mavros::plugin::PluginBase">
 		<description>Send vision speed estimate to FCU.</description>
 	</class>
+	<class name="force_sensor" type="mavros::extra_plugins::ForceSensorPlugin" base_class_type="mavros::plugin::PluginBase">
+		<description> Sends force sensor data to FCU.</description>
+	</class>
 </library>
