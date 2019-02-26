@@ -92,8 +92,8 @@ MavRos::MavRos() :
 	//	fcu_link->set_protocol_version(mavconn::Protocol::V20);
 	//}
 	else {
-		ROS_WARN("Unknown FCU protocol: \"%s\", should be: \"v1.0\" or \"v2.0\". Used default v1.0.", fcu_protocol.c_str());
-		fcu_link->set_protocol_version(mavconn::Protocol::V10);
+		ROS_WARN("Unknown FCU protocol: \"%s\", should be: \"v1.0\" or \"v2.0\". Used default v2.0.", fcu_protocol.c_str());
+		fcu_link->set_protocol_version(mavconn::Protocol::V20);
 	}
 
 	if (gcs_url != "") {
