@@ -77,7 +77,7 @@ add_library(mavros_extras
   src/plugins/rangefinder.cpp
   src/plugins/trajectory.cpp
   src/plugins/vibration.cpp
-  src/plugins/vision_pose_estimate.cpp
+#  src/plugins/vision_pose_estimate.cpp
   src/plugins/vision_speed_estimate.cpp
   src/plugins/vicon_pose_estimate.cpp
 )
