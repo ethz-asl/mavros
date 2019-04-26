@@ -113,10 +113,6 @@ private:
 
 	void vicon_cb(const geometry_msgs::TransformStamped &transform)
 	{
-<<<<<<< cb5ee9ee5163b23bcaf4870ad87bba08fa11710d
-=======
-		//std::cout << "vicon cb callback \n";
->>>>>>> Added vicon estimate for using ekf2
 		Eigen::Affine3d tr;
 		tf::transformMsgToEigen(transform.transform, tr);
 		ftf::Covariance6d cov {};	// zero initialized, no covariance info for mocap
