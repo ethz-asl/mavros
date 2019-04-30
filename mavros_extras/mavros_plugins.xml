@@ -20,9 +20,6 @@
 	<class name="log_transfer" type="mavros::extra_plugins::LogTransferPlugin" base_class_type="mavros::plugin::PluginBase">
 		 <description>Expose firmware functionality, that is related to log transfer</description>
 	</class>
-	<class name="mocap_pose_estimate" type="mavros::extra_plugins::MocapPoseEstimatePlugin" base_class_type="mavros::plugin::PluginBase">
-		<description>Send motion capture pose estimate to FCU.</description>
-	</class>
 	<class name="obstacle_distance" type="mavros::extra_plugins::ObstacleDistancePlugin" base_class_type="mavros::plugin::PluginBase">
 		<description>Send obstacle distance report to the FCU.</description>
 	</class>
