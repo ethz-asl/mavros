@@ -105,9 +105,13 @@ private:
 		pose->header = m_uas->synchronized_header(frame_id, pos_ned.time_boot_ms);
 		twist->header = pose->header;
 		euler_angles->header = pose->header;
-		euler_angles->vector.x = 0;
-		euler_angles->vector.y = 0;
-		euler_angles->vector.z = 0;
+		// double roll, pitch, yaw;
+		auto euler = enu_orientation.toRotationMatrix().eulerAngles(0,1,2);
+		std::cout << "Euler from quaternion in roll, pitch, yaw"<< std::endl << euler << std::endl;
+		// tf::Matrix3x3(pose->pose.orientation).getRPY(roll, pitch, yaw);
+		euler_angles->vector.x = euler(0);
+		euler_angles->vector.y = euler(1);
+		euler_angles->vector.z = euler(2);
 
 
 		tf::pointEigenToMsg(enu_position, pose->pose.position);
