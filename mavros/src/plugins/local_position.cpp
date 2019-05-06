@@ -58,7 +58,7 @@ public:
 		lp_nh.param("tf/send_fcu", tf_send_fcu, false);
 
 		local_position = lp_nh.advertise<geometry_msgs::PoseStamped>("pose", 10);
-		euler_angles_pub = lp_nh.advertise<geometry_msgs::Vector3Stamped>("euler_angles", 10);
+		euler_angles_pub = lp_nh.advertise<geometry_msgs::Vector3Stamped>("eulerRPY", 10);
 		local_velocity = lp_nh.advertise<geometry_msgs::TwistStamped>("velocity", 10);
 		local_odom = lp_nh.advertise<nav_msgs::Odometry>("odom",10);
 	}
