@@ -22,6 +22,7 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/TransformStamped.h>
+#include <geometry_msgs/Vector3Stamped.h>
 
 #include <nav_msgs/Odometry.h>
 
@@ -57,6 +58,7 @@ public:
 		lp_nh.param("tf/send_fcu", tf_send_fcu, false);
 
 		local_position = lp_nh.advertise<geometry_msgs::PoseStamped>("pose", 10);
+		euler_angles_pub = lp_nh.advertise<geometry_msgs::Vector3Stamped>("euler_angles", 10);
 		local_velocity = lp_nh.advertise<geometry_msgs::TwistStamped>("velocity", 10);
 		local_odom = lp_nh.advertise<nav_msgs::Odometry>("odom",10);
 	}
@@ -69,7 +71,7 @@ public:
 
 private:
 	ros::NodeHandle lp_nh;
-
+	ros::Publisher euler_angles_pub;
 	ros::Publisher local_position;
 	ros::Publisher local_velocity;
 	ros::Publisher local_odom;
@@ -98,9 +100,15 @@ private:
 		auto pose = boost::make_shared<geometry_msgs::PoseStamped>();
 		auto twist = boost::make_shared<geometry_msgs::TwistStamped>();
 		auto odom = boost::make_shared<nav_msgs::Odometry>();
+		auto euler_angles = boost::make_shared<geometry_msgs::Vector3Stamped>();
 
 		pose->header = m_uas->synchronized_header(frame_id, pos_ned.time_boot_ms);
 		twist->header = pose->header;
+		euler_angles->header = pose->header;
+		euler_angles->vector.x = 0;
+		euler_angles->vector.y = 0;
+		euler_angles->vector.z = 0;
+
 
 		tf::pointEigenToMsg(enu_position, pose->pose.position);
 		pose->pose.orientation = enu_orientation_msg;
@@ -138,6 +146,7 @@ private:
 		local_odom.publish(odom);
 		local_position.publish(pose);
 		local_velocity.publish(twist);
+		euler_angles_pub.publish(euler_angles);
 
 		if (tf_send) {
 			geometry_msgs::TransformStamped transform;
