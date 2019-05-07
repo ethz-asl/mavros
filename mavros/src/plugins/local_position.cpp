@@ -82,6 +82,21 @@ private:
 	bool tf_send;
 	bool tf_send_fcu;	//!< report NED->aircraft in tf tree
 
+	// this function converts the eigen quaternion to euler angles (standard yaw, pitch, roll sequence)
+	Eigen::Vector3d convert_eigen_quaternion_to_roll_pitch_yaw(Eigen::Quaterniond in)
+	{
+		const auto x = in.x();		
+		const auto y = in.y();		
+		const auto z = in.z();		
+		const auto w = in.w();
+		Eigen::Vector3d vector;
+
+		vector(0) = atan2(2.0*y*z + 2.0*w*x, z*z - y*y - x*x + w*w);
+		vector(1) = -asin(2.0*x*z - 2.0*w*y);
+		vector(2) = atan2(2*x*y + 2*w*z,x*x + w*w - z*z - y*y);				
+		return vector;
+	}
+
 	void handle_local_position_ned(const mavlink::mavlink_message_t *msg, mavlink::common::msg::LOCAL_POSITION_NED &pos_ned)
 	{
 		//--------------- Transform FCU position and Velocity Data ---------------//
@@ -106,7 +121,8 @@ private:
 		twist->header = pose->header;
 		euler_angles->header = pose->header;
 		// double roll, pitch, yaw;
-		auto euler = enu_orientation.toRotationMatrix().eulerAngles(0,1,2);
+		// auto euler = enu_orientation.toRotationMatrix().eulerAngles(0,1,2);
+		auto euler = convert_eigen_quaternion_to_roll_pitch_yaw(enu_orientation);
 		std::cout << "Euler from quaternion in roll, pitch, yaw"<< std::endl << euler << std::endl;
 		// tf::Matrix3x3(pose->pose.orientation).getRPY(roll, pitch, yaw);
 		euler_angles->vector.x = euler(0);
