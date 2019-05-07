@@ -93,10 +93,10 @@ MAVConnUDP::MAVConnUDP(uint8_t system_id, uint8_t component_id,
 			remote_ep = udp::endpoint(boost::asio::ip::address_v4::broadcast(), remote_port);
 		}
 
-		if (remote_exists)
-			CONSOLE_BRIDGE_logInform(PFXd "Remote address: %s", conn_id, to_string_ss(remote_ep).c_str());
-		else
-			CONSOLE_BRIDGE_logWarn(PFXd "Remote address resolve failed.", conn_id);
+		// if (remote_exists)
+		//	CONSOLE_BRIDGE_logInform(PFXd "Remote address: %s", conn_id, to_string_ss(remote_ep).c_str());
+		//else
+		//	CONSOLE_BRIDGE_logWarn(PFXd "Remote address resolve failed.", conn_id);
 	}
 
 	try {
@@ -246,7 +246,7 @@ void MAVConnUDP::do_recvfrom()
 				}
 
 				if (!sthis->permanent_broadcast && sthis->remote_ep != sthis->last_remote_ep) {
-					CONSOLE_BRIDGE_logInform(PFXd "Remote address: %s", sthis->conn_id, to_string_ss(sthis->remote_ep).c_str());
+					// CONSOLE_BRIDGE_logInform(PFXd "Remote address: %s", sthis->conn_id, to_string_ss(sthis->remote_ep).c_str());
 					sthis->remote_exists = true;
 					sthis->last_remote_ep = sthis->remote_ep;
 				}
