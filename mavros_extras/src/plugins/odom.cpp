@@ -215,6 +215,11 @@ private:
 		lin_vel = Eigen::Vector3d(ftf::to_eigen(odom->twist.twist.linear)); //velocity is in the body frame
 		ang_vel = Eigen::Vector3d(ftf::to_eigen(odom->twist.twist.angular));
 		orientation = Eigen::Quaterniond(ftf::to_eigen(odom->pose.pose.orientation));
+		//convert the position expressed in the enu world frame to a vector expressed in the ned frame
+		auto position_enu = ftf::transform_frame_enu_ned(position);
+		//convert the attitude expressed using ROS standard to attitude expressed using px4 standard.
+		auto q_px4 = ftf::transform_orientation_enu_ned(
+					ftf::transform_orientation_baselink_aircraft(orientation));
 
 		/* -*- ODOMETRY msg parser -*- */
 		msg.time_usec = odom->header.stamp.toNSec() / 1e3;
@@ -226,9 +231,9 @@ private:
 		// for a, b in zip("xyz", ('rollspeed', 'pitchspeed', 'yawspeed')):
 		//     cog.outl("msg.{b} = ang_vel.{a}();".format(**locals()))
 		// ]]]
-		msg.x = position.x();
-		msg.y = position.y();
-		msg.z = position.z();
+		msg.x = position_enu.x();
+		msg.y = position_enu.y();
+		msg.z = position_enu.z();
 		msg.vx = lin_vel.x();
 		msg.vy = lin_vel.y();
 		msg.vz = lin_vel.z();
@@ -238,7 +243,7 @@ private:
 		// [[[end]]] (checksum: ead24a1a6a14496c9de6c1951ccfbbd7)
 		ROS_INFO("odometry pos x: %f, y: %f, z:%f \n", msg.x, msg.y,msg.z);
 
-		ftf::quaternion_to_mavlink(orientation, msg.q);
+		ftf::quaternion_to_mavlink(q_px4, msg.q);
 		ftf::covariance_urt_to_mavlink(cov_pose_map, msg.pose_covariance);
 		ftf::covariance_urt_to_mavlink(cov_vel_map, msg.twist_covariance);
 
