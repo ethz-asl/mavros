@@ -234,6 +234,7 @@ private:
 		msg.x = position_enu.x();
 		msg.y = position_enu.y();
 		msg.z = position_enu.z();
+		//lin_vel_in_body_nwu_frame
 		msg.vx = lin_vel.x();
 		msg.vy = lin_vel.y();
 		msg.vz = lin_vel.z();
