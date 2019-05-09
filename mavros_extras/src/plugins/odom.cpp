@@ -159,7 +159,9 @@ private:
 		Eigen::Vector3d position {};		//!< Position vector. WRT frame_id
 		Eigen::Quaterniond orientation {};	//!< Attitude quaternion. WRT frame_id
 		Eigen::Vector3d lin_vel {};		//!< Linear velocity vector. WRT child_frame_id
+		Eigen::Vector3d lin_vel_ned {};		//!< Linear velocity vector. In the px4 body frame
 		Eigen::Vector3d ang_vel {};		//!< Angular velocity vector. WRT child_frame_id
+		Eigen::Vector3d ang_vel_ned {};		//!< Angular velocity vector. In the px4 body frame
 		// Matrix6d r_pose = Matrix6d::Zero();	//!< Zero initialized pose 6-D Covariance matrix. WRT frame_id
 		// Matrix6d r_vel = Matrix6d::Zero();	//!< Zero initialized velocity 6-D Covariance matrix. WRT child_frame_id
 
@@ -212,14 +214,23 @@ private:
 
 		/*directly pass the message from msf odometry to the msg. Todo: weixuan: clean this up. Note that body frame is in the nwu frame*/
 		position = Eigen::Vector3d(ftf::to_eigen(odom->pose.pose.position)); //position is the world frame
-		lin_vel = Eigen::Vector3d(ftf::to_eigen(odom->twist.twist.linear)); //velocity is in the body frame
+		lin_vel = Eigen::Vector3d(ftf::to_eigen(odom->twist.twist.linear)); //velocity is in the ros body frame
 		ang_vel = Eigen::Vector3d(ftf::to_eigen(odom->twist.twist.angular));
 		orientation = Eigen::Quaterniond(ftf::to_eigen(odom->pose.pose.orientation));
 		//convert the position expressed in the enu world frame to a vector expressed in the ned frame
-		auto position_enu = ftf::transform_frame_enu_ned(position);
+		auto position_ned = ftf::transform_frame_enu_ned(position);
 		//convert the attitude expressed using ROS standard to attitude expressed using px4 standard.
 		auto q_px4 = ftf::transform_orientation_enu_ned(
 					ftf::transform_orientation_baselink_aircraft(orientation));
+		//convert the linear velocity expressed in the ROS body frame to the px4 body frame
+		lin_vel_ned.x() = lin_vel.x();
+		lin_vel_ned.y() = -lin_vel.y();
+		lin_vel_ned.z() = -lin_vel.z();
+
+		//convert the angular velocity expressed in the ROS body frame to the px4 body frame
+		ang_vel_ned.x() = ang_vel_ned.x();
+		ang_vel_ned.y() = - ang_vel_ned.y();
+		ang_vel_ned.z() = - ang_vel_ned.z();
 
 		/* -*- ODOMETRY msg parser -*- */
 		msg.time_usec = odom->header.stamp.toNSec() / 1e3;
@@ -231,16 +242,16 @@ private:
 		// for a, b in zip("xyz", ('rollspeed', 'pitchspeed', 'yawspeed')):
 		//     cog.outl("msg.{b} = ang_vel.{a}();".format(**locals()))
 		// ]]]
-		msg.x = position_enu.x();
-		msg.y = position_enu.y();
-		msg.z = position_enu.z();
+		msg.x = position_ned.x();
+		msg.y = position_ned.y();
+		msg.z = position_ned.z();
 		//lin_vel_in_body_nwu_frame
-		msg.vx = lin_vel.x();
-		msg.vy = lin_vel.y();
-		msg.vz = lin_vel.z();
-		msg.rollspeed = ang_vel.x();
-		msg.pitchspeed = ang_vel.y();
-		msg.yawspeed = ang_vel.z();
+		msg.vx = lin_vel_ned.x();
+		msg.vy = lin_vel_ned.y();
+		msg.vz = lin_vel_ned.z();
+		msg.rollspeed = ang_vel_ned.x();
+		msg.pitchspeed = ang_vel_ned.y();
+		msg.yawspeed = ang_vel_ned.z();
 		// [[[end]]] (checksum: ead24a1a6a14496c9de6c1951ccfbbd7)
 		ROS_INFO("odometry pos x: %f, y: %f, z:%f \n", msg.x, msg.y,msg.z);
 
