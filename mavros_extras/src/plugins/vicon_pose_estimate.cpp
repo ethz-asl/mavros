@@ -22,6 +22,8 @@
 #include <geometry_msgs/TransformStamped.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 
+#define RAD_TO_DEG_D 180.0/3.1415926
+
 namespace mavros {
 namespace extra_plugins{
 /**
@@ -99,7 +101,7 @@ private:
 		vp.pitch = rpy.y();
 		vp.yaw = rpy.z();
 		// [[[end]]] (checksum: 2048daf411780847e77f08fe5a0b9dd3)
-
+		// printf("Vicon estimate roll pitch yaw is: %f, %f, %f \n", vp.roll*RAD_TO_DEG_D, -vp.pitch*RAD_TO_DEG_D, 90 - vp.yaw*RAD_TO_DEG_D);
 		// just the URT of the 6x6 Pose Covariance Matrix, given
 		// that the matrix is symmetric
 		ftf::covariance_urt_to_mavlink(cov_map, vp.covariance);

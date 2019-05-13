@@ -182,7 +182,7 @@ private:
 		tf::quaternionEigenToMsg(orientation, target->orientation);
 		tf::vectorEigenToMsg(body_rate, target->body_rate);
 		target->thrust = tgt.thrust;
-		auto euler = convert_eigen_quaternion_to_roll_pitch_yaw(Eigen::Quaterniond(tgt.q[0], tgt.q[1], tgt.q[2], tgt.q[3]));
+		auto euler = convert_eigen_quaternion_to_roll_pitch_yaw(orientation);
 		euler_angles->header.stamp = target->header.stamp;
 		euler_angles->vector.x = euler(0);
 		euler_angles->vector.y = euler(1);
