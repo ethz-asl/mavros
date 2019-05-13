@@ -174,7 +174,6 @@ private:
 						Eigen::Quaterniond(tgt.q[0], tgt.q[1], tgt.q[2], tgt.q[3])));
 
 		auto body_rate = ftf::transform_frame_baselink_aircraft(Eigen::Vector3d(tgt.body_roll_rate, tgt.body_pitch_rate, tgt.body_yaw_rate));
-		auto euler_angles = boost::make_shared<geometry_msgs::Vector3Stamped>();
 		auto target = boost::make_shared<mavros_msgs::AttitudeTarget>();
 
 		target->header.stamp = m_uas->synchronise_stamp(tgt.time_boot_ms);
@@ -182,13 +181,8 @@ private:
 		tf::quaternionEigenToMsg(orientation, target->orientation);
 		tf::vectorEigenToMsg(body_rate, target->body_rate);
 		target->thrust = tgt.thrust;
-		auto euler = convert_eigen_quaternion_to_roll_pitch_yaw(orientation);
-		euler_angles->header.stamp = target->header.stamp;
-		euler_angles->vector.x = euler(0);
-		euler_angles->vector.y = euler(1);
-		euler_angles->vector.z = euler(2);
+		
 		target_attitude_pub.publish(target);
-		target_euler_angles_pub.publish(euler_angles);
 	}
 
 	/* -*- callbacks -*- */
@@ -277,6 +271,14 @@ private:
 					ned_desired_orientation,
 					body_rate,
 					req->thrust);
+		auto euler_angles = boost::make_shared<geometry_msgs::Vector3Stamped>();
+		auto euler = convert_eigen_quaternion_to_roll_pitch_yaw(desired_orientation);
+		euler_angles->header.stamp = req->header.stamp;
+		euler_angles->vector.x = euler(0);
+		euler_angles->vector.y = euler(1);
+		euler_angles->vector.z = euler(2);
+		target_euler_angles_pub.publish(euler_angles);
+
 	}
 
     void rpyt_cb(const mav_msgs::RollPitchYawrateThrustConstPtr msg) {
