@@ -140,9 +140,13 @@ MavRos::MavRos() :
 
 	// XXX TODO: move workers to ROS Spinner, let mavconn threads to do only IO
 	fcu_link->message_received_cb = [this](const mavlink_message_t *msg, const Framing framing) {
+		if(msg->msgid == 112){
+			ROS_WARN_STREAM("RECEIVED CAM TRIGGER MSG");
+		}
+
 		mavlink_pub_cb(msg, framing);
 		plugin_route_cb(msg, framing);
-
+		
 		if (gcs_link) {
 			if (this->gcs_quiet_mode && msg->msgid != mavlink::common::msg::HEARTBEAT::MSG_ID &&
 				(ros::Time::now() - this->last_message_received_from_gcs > this->conn_timeout)) {
