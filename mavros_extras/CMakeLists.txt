@@ -73,7 +73,7 @@ add_library(mavros_extras
   src/plugins/log_transfer.cpp
   src/plugins/mocap_pose_estimate.cpp
   src/plugins/obstacle_distance.cpp
-  src/plugins/odom.cpp
+  #src/plugins/odom.cpp
   src/plugins/px4flow.cpp
   src/plugins/rangefinder.cpp
   src/plugins/trajectory.cpp
