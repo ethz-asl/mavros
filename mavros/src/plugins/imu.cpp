@@ -23,7 +23,8 @@
 #include <sensor_msgs/Temperature.h>
 #include <sensor_msgs/FluidPressure.h>
 #include <geometry_msgs/Vector3.h>
-
+// #include "std_msgs/String.h"
+#include "std_msgs/Float64.h"
 namespace mavros {
 namespace std_plugins {
 //! Gauss to Tesla coeff
@@ -89,6 +90,7 @@ public:
 		static_press_pub = imu_nh.advertise<sensor_msgs::FluidPressure>("static_pressure", 10);
 		diff_press_pub = imu_nh.advertise<sensor_msgs::FluidPressure>("diff_pressure", 10);
 		imu_raw_pub = imu_nh.advertise<sensor_msgs::Imu>("data_raw", 10);
+		dynamixel_pub = imu_nh.advertise<std_msgs::Float64>("angle0",10);
 
 		// Reset has_* flags on connection change
 		enable_connection_cb();
@@ -102,6 +104,7 @@ public:
 			       make_handler(&IMUPlugin::handle_raw_imu),
 			       make_handler(&IMUPlugin::handle_scaled_imu),
 			       make_handler(&IMUPlugin::handle_scaled_pressure),
+			       make_handler(&IMUPlugin::handle_dynamixel),
 		};
 	}
 
@@ -116,6 +119,7 @@ private:
 	ros::Publisher temp_baro_pub;
 	ros::Publisher static_press_pub;
 	ros::Publisher diff_press_pub;
+	ros::Publisher dynamixel_pub;
 
 	bool has_hr_imu;
 	bool has_raw_imu;
@@ -315,6 +319,19 @@ private:
 		// [rotate_gyro]
 
 		publish_imu_data(att.time_boot_ms, enu_baselink_orientation, ned_aircraft_orientation, gyro_flu, gyro_frd);
+	}
+
+	/**
+	 * @brief Handle DYNAMIXEL_STATUS MAVlink message.
+	 * @param msg		Received Mavlink msg
+	 * @param dynamixel		DYNAMIXEL_STATUS msg
+	 */
+	void handle_dynamixel(const mavlink::mavlink_message_t *msg, mavlink::omav::msg::DYNAMIXEL_STATUS &dyn_s)
+	{
+		auto angle_msg = boost::make_shared<std_msgs::Float64>();
+		angle_msg->data = dyn_s.angles[0];
+		dynamixel_pub.publish(angle_msg);
+		
 	}
 
 	/**
