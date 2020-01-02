@@ -15,6 +15,7 @@
  */
 
 #include <cmath>
+#include <ros/console.h>
 #include <mavros/mavros_plugin.h>
 #include <eigen_conversions/eigen_msg.h>
 
@@ -25,7 +26,8 @@
 #include <geometry_msgs/Vector3.h>
 #include <mavros_msgs/DynamixelStatus.h>
 // #include "std_msgs/String.h"
-#include "std_msgs/Float64.h"
+// #include "std_msgs/Float64.h"
+// #include "std_msgs/Time.h"
 namespace mavros {
 namespace std_plugins {
 //! Gauss to Tesla coeff
@@ -330,6 +332,8 @@ private:
 	void handle_dynamixel(const mavlink::mavlink_message_t *msg, mavlink::omav::msg::DYNAMIXEL_STATUS &dyn_s)
 	{
 		auto dynamixel_status = boost::make_shared<mavros_msgs::DynamixelStatus>();
+		dynamixel_status->header.stamp = m_uas->synchronise_stamp(dyn_s.time_boot_us);
+		dynamixel_status->msg_arrival_time = ros::Time::now();
 		for (int i; i<6; i++)
 		{
 			dynamixel_status->measured_angles[i]  = dyn_s.angles[i];
