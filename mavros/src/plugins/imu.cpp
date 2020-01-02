@@ -23,6 +23,7 @@
 #include <sensor_msgs/Temperature.h>
 #include <sensor_msgs/FluidPressure.h>
 #include <geometry_msgs/Vector3.h>
+#include <mavros_msgs/DynamixelStatus.h>
 // #include "std_msgs/String.h"
 #include "std_msgs/Float64.h"
 namespace mavros {
@@ -90,7 +91,7 @@ public:
 		static_press_pub = imu_nh.advertise<sensor_msgs::FluidPressure>("static_pressure", 10);
 		diff_press_pub = imu_nh.advertise<sensor_msgs::FluidPressure>("diff_pressure", 10);
 		imu_raw_pub = imu_nh.advertise<sensor_msgs::Imu>("data_raw", 10);
-		dynamixel_pub = imu_nh.advertise<std_msgs::Float64>("angle0",10);
+		dynamixel_pub = imu_nh.advertise<mavros_msgs::DynamixelStatus>("dynamixel_status",10);
 
 		// Reset has_* flags on connection change
 		enable_connection_cb();
@@ -328,9 +329,14 @@ private:
 	 */
 	void handle_dynamixel(const mavlink::mavlink_message_t *msg, mavlink::omav::msg::DYNAMIXEL_STATUS &dyn_s)
 	{
-		auto angle_msg = boost::make_shared<std_msgs::Float64>();
-		angle_msg->data = dyn_s.angles[0];
-		dynamixel_pub.publish(angle_msg);
+		auto dynamixel_status = boost::make_shared<mavros_msgs::DynamixelStatus>();
+		for (int i; i<6; i++)
+		{
+			dynamixel_status->measured_angles[i]  = dyn_s.angles[i];
+		}
+		dynamixel_status->noutputs = dyn_s.noutputs;
+		
+		dynamixel_pub.publish(dynamixel_status);
 		
 	}
 
