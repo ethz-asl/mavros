@@ -336,7 +336,8 @@ private:
 		dynamixel_status->msg_arrival_time = ros::Time::now();
 		for (int i; i<6; i++)
 		{
-			dynamixel_status->measured_angles[i]  = dyn_s.angles[i];
+			dynamixel_status->measured_angles[i]  = dyn_s.anglesMeasured[i];
+			dynamixel_status->cmd_angles[i]  = dyn_s.anglesSet[i];
 		}
 		dynamixel_status->noutputs = dyn_s.noutputs;
 		
