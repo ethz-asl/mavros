@@ -59,6 +59,7 @@ add_message_files(
   TiltrotorActuatorCommands.msg
   AttitudeThrustTarget.msg
   AllocationMatrix.msg
+  DynamixelStatus.msg
 )
 
 add_service_files(
