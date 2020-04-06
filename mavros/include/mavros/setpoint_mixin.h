@@ -158,6 +158,120 @@ public:
 };
 
 /**
+ * @brief This mixin adds set_wrench_target()
+ */
+template <class D>
+class SetWrenchTargetMixin {
+public:
+	//! Message sepecification:
+	void set_wrench_target(Eigen::Vector3d force,
+			Eigen::Vector3d torque)
+	{
+		mavros::UAS *m_uas_ = static_cast<D *>(this)->m_uas;
+		mavlink::omav::msg::SET_WRENCH_TARGET_BODY_NED sp;
+
+		sp.force_x = force.x();
+		sp.force_y = force.y();
+		sp.force_z = force.z();
+		sp.torque_x = torque.x();
+		sp.torque_y = torque.y();
+		sp.torque_z = torque.z();
+
+		UAS_FCU(m_uas_)->send_message_ignore_drop(sp);
+	}
+};
+
+/**
+ * @brief This mixin adds set_tilt_angle_target()
+ */
+template <class D>
+class SetTiltAngleTargetMixin {
+public:
+	//! Message sepecification:
+	void set_tilt_angle_target(float *alpha)
+	{
+		mavros::UAS *m_uas_ = static_cast<D *>(this)->m_uas;
+		mavlink::omav::msg::SET_ROTOR_TILT_TARGET sp;
+		for (int i=0 ; i<6 ; i++) {
+			sp.alpha[i] = alpha[i];
+		}
+		UAS_FCU(m_uas_)->send_message_ignore_drop(sp);
+	}
+};
+
+/**
+ * @brief This mixin adds set_tiltrotor_actuator_commands()
+ */
+template <class D>
+class SetTiltrotorActuatorCommandsMixin {
+public:
+	//! Message sepecification:
+	void set_tiltrotor_actuator_commands(float *u)
+	{
+		mavros::UAS *m_uas_ = static_cast<D *>(this)->m_uas;
+		mavlink::omav::msg::SET_TILTROTOR_ACTUATOR_COMMANDS sp;
+		for (int i=0 ; i<6 ; i++) {
+			sp.u_tiltangles[i] = u[i];
+		}
+		for (int i=0 ; i<12 ; i++) {
+			sp.u_rotors[i] = static_cast<int>(u[i+6]);
+		}
+		UAS_FCU(m_uas_)->send_message_ignore_drop(sp);
+	}
+};
+
+/**
+ * @brief This mixin adds set_attitude_thrust_target()
+ */
+template <class D>
+class SetAttitudeThrustTargetMixin {
+public:
+	//! Message sepecification:
+	void set_attitude_thrust_target(Eigen::Vector3d linear_acceleration,
+			Eigen::Vector3d angular_acceleration, Eigen::Quaterniond q,
+			Eigen::Vector3d rates_sp)
+	{
+		mavros::UAS *m_uas_ = static_cast<D *>(this)->m_uas;
+		mavlink::omav::msg::SET_ATTITUDE_THRUST_VECTOR_TARGET_NED sp;
+		sp.acc_x = linear_acceleration.x();
+		sp.acc_y = linear_acceleration.y();
+		sp.acc_z = linear_acceleration.z();
+		sp.acc_roll = angular_acceleration.x();
+		sp.acc_pitch = angular_acceleration.y();
+		sp.acc_yaw = angular_acceleration.z();
+ 		sp.q_w = q.w();
+ 		sp.q_x = q.x();
+ 		sp.q_y = q.y();
+ 		sp.q_z = q.z();
+ 		sp.p = rates_sp.x();
+ 		sp.q = rates_sp.y();
+ 		sp.r = rates_sp.z();
+		UAS_FCU(m_uas_)->send_message_ignore_drop(sp);
+	}
+};
+
+/**
+ * @brief This mixin adds set_allocation_matrix()
+ */
+template <class D>
+class SetAllocationMatrixMixin {
+public:
+	//! Message sepecification:
+	void set_allocation_matrix(Eigen::VectorXd allocation_matrix,
+								Eigen::VectorXd tilt_angles)
+	{
+		mavros::UAS *m_uas_ = static_cast<D *>(this)->m_uas;
+		mavlink::omav::msg::SET_ALLOCATION_MATRIX sp;
+		for (int i=0;i<36;i++) {
+			sp.allocation_matrix[i] = allocation_matrix(i);
+		}
+		for (int i=0;i<6;i++) {
+			sp.tilt_angles[i] = tilt_angles(i);
+		}
+		UAS_FCU(m_uas_)->send_message_ignore_drop(sp);
+	}
+};
+/**
  * @brief This mixin adds TF2 listener thread to plugin
  *
  * It requires tf_frame_id, tf_child_frame_id strings

@@ -54,6 +54,11 @@ add_message_files(
   WaypointList.msg
   WaypointReached.msg
   WheelOdomStamped.msg
+  WrenchTarget.msg
+  TiltAngleTarget.msg
+  TiltrotorActuatorCommands.msg
+  AttitudeThrustTarget.msg
+  AllocationMatrix.msg
 )
 
 add_service_files(
