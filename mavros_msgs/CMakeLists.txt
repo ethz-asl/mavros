@@ -10,14 +10,16 @@ add_message_files(
   FILES
   ADSBVehicle.msg
   ActuatorControl.msg
+  AllocationMatrix.msg
   Altitude.msg
   AttitudeTarget.msg
+  AttitudeThrustTarget.msg
   BatteryStatus.msg
   CamIMUStamp.msg
   CommandCode.msg
   CompanionProcessStatus.msg
-  OnboardComputerStatus.msg
   DebugValue.msg
+  DynamixelStatus.msg
   ExtendedState.msg
   FileEntry.msg
   GlobalPositionTarget.msg
@@ -33,6 +35,7 @@ add_message_files(
   ManualControl.msg
   Mavlink.msg
   MountControl.msg
+  OnboardComputerStatus.msg
   OpticalFlowRad.msg
   OverrideRCIn.msg
   Param.msg
@@ -45,6 +48,8 @@ add_message_files(
   State.msg
   StatusText.msg
   Thrust.msg
+  TiltAngleTarget.msg
+  TiltrotorActuatorCommands.msg
   TimesyncStatus.msg
   Trajectory.msg
   VFR_HUD.msg
@@ -55,11 +60,6 @@ add_message_files(
   WaypointReached.msg
   WheelOdomStamped.msg
   WrenchTarget.msg
-  TiltAngleTarget.msg
-  TiltrotorActuatorCommands.msg
-  AttitudeThrustTarget.msg
-  AllocationMatrix.msg
-  DynamixelStatus.msg
 )
 
 add_service_files(
