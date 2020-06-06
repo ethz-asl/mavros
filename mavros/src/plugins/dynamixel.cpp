@@ -31,7 +31,7 @@ public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 	DynamixelPlugin() : PluginBase(),
-		dynamixel_nh("~dynamixel"),
+		dynamixel_nh("~dynamixel")
 	{ }
 
 	void initialize(UAS &uas_)
