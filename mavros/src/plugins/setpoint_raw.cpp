@@ -334,12 +334,15 @@ private:
 		tf::vectorMsgToEigen(msg->thrust, force);
 		tf::vectorMsgToEigen(msg->torque, torque);
 
-		// Transform frame ENU->NED
-		force = ftf::transform_frame_enu_ned(force);
-		torque = ftf::transform_frame_enu_ned(torque);
+		// Transform frame NWU->NED
+		force.y() = -force.y();
+		force.z() = -force.z();
+		torque.y() = -torque.y();
+		torque.z() = -torque.z();
 
 		set_wrench_target(force, torque);
 	}
+
     void tilt_angle_cb(const mavros_msgs::TiltAngleTarget::ConstPtr &req)
 	{
 		float alpha[6];
@@ -348,6 +351,7 @@ private:
 		}
 		set_tilt_angle_target(alpha);
 	}
+
     void tiltrotor_actuator_commands_cb(const mavros_msgs::TiltrotorActuatorCommands::ConstPtr &req)
 	{
 		float u[18];
@@ -359,6 +363,7 @@ private:
 		}
 		set_tiltrotor_actuator_commands(u);
 	}
+	
     void attitude_thrust_target_cb(const mavros_msgs::AttitudeThrustTarget::ConstPtr &req)
 	{
 		Eigen::Vector3d a_lin, a_ang, rates_sp;
